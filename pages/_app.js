@@ -42,7 +42,7 @@ function MyApp({ Component, pageProps }) {
                <Link href='addcause'className="nav-link">New Cause</Link>
           </li>
           <li className="nav-item">
-              <a className="nav-link" href="#">Donate</a>
+              <Link href='donate'className="nav-link">Donate</Link>
           </li>
           <li className="nav-item px-4">
               <a className="nav-link">About Us</a>

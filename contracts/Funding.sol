@@ -52,7 +52,7 @@ contract Funding {
 
     }
 
-	function getBalance(address _recepient) public view returns(uint){
+	function getBal(address _recepient) public view returns(uint){
         return fundDetails[_recepient].balance;
     }
 }

@@ -17,22 +17,32 @@ const addcause = () => {
         // Get data from the form.
         let validDate = new Date(event.target.date.value)
         console.log("valid date is:",validDate)
-        validDate.setDate(validDate.getDate() + 7);
+        validDate.setDate(validDate.getDate());
         const deadLine = Math.floor(validDate.getTime() / 1000);
-        const data = {
-          purpose: event.target.purpose.value,
-          address: event.target.address.value,
-          amount: event.target.amount.value,
-          date: deadLine
-        }
+        
 
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
         const contractABI = abi;
         const contractInstance = new web3.eth.Contract(contractABI, contractAddress)
-        const txAccount = '0xE43a324f2439BA3a5389585F362396649504E697';
-        let txR = await contractInstance.methods.setDetails(data.address, data.purpose, 0, data.amount, data.date).send({from: txAccount})
-        console.log("txR", txR);
+        const txAccount = '0x46058EA99B494E7cDe2E0DB6a96e97AF25B59FD2';
+        const data = {
+          purpose: event.target.purpose.value,
+          address: event.target.address.value,
+          amount: web3.utils.toWei(event.target.amount.value, 'ether'),
+          date: deadLine
+        }
+        try {
+          let txR = await contractInstance.methods.setDetails(data.address, data.purpose, 0, data.amount, data.date).send({from: txAccount})
+          console.log("txR", txR);
+          console.log("setting local storage");
+          localStorage.setItem('purpose',data.purpose);
+          localStorage.setItem('address',data.address);
+          localStorage.setItem('amount',event.target.date.value);
+          localStorage.setItem('date',event.target.date.value);
+        } catch(error){
+          console.error(error)
+        }    
     }
   return (
 <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
@@ -62,7 +72,7 @@ const addcause = () => {
     <label className="form-label">Target date</label>
   </div>
 
-  <button type="submit" className="btn btn-primary btn-block mb-4">Submit</button>
+  <button type="submit" className="btn btn-success mb-4">Submit</button>
 </form>
 </div>
   )
