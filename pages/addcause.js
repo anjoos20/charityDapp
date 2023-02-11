@@ -30,16 +30,18 @@ const addcause = () => {
           purpose: event.target.purpose.value,
           address: event.target.address.value,
           amount: web3.utils.toWei(event.target.amount.value, 'ether'),
-          date: deadLine
+          date: deadLine,
+          commission: event.target.commission.value
         }
         try {
-          let txR = await contractInstance.methods.setDetails(data.address, data.purpose, 0, data.amount, data.date).send({from: txAccount})
+          let txR = await contractInstance.methods.setDetails(data.address, data.purpose, 0, data.amount, data.date, data.commission).send({from: txAccount})
           console.log("txR", txR);
           console.log("setting local storage");
           localStorage.setItem('purpose',data.purpose);
           localStorage.setItem('address',data.address);
           localStorage.setItem('amount',event.target.date.value);
           localStorage.setItem('date',event.target.date.value);
+          localStorage.setItem('commission',data.commission.value)
         } catch(error){
           console.error(error)
         }    
@@ -70,6 +72,11 @@ const addcause = () => {
   <div className="form-outline mb-4">
     <input type="date" id="date" className="form-control" />
     <label className="form-label">Target date</label>
+  </div>
+
+  <div className="form-outline mb-4">
+    <input type="commission" id="commission" className="form-control" />
+    <label className="form-label">Commission in ether</label>
   </div>
 
   <button type="submit" className="btn btn-success mb-4">Submit</button>

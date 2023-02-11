@@ -16,38 +16,34 @@ contract Funding {
 		string cause;
 		uint balance;
 		uint targetLimit;
-		uint targetDate;
+		uint commission;
 	}
 		
-	uint remAmount;
-	uint returnAmount;
 	details public Details;
 	mapping (address => details) fundDetails;
 
-	function setDetails(address _recipient, string memory _cause, uint _balance, uint _targetLimit, uint _targetDate) public{
+	event donateEvent(address indexed, uint);
+
+	function setDetails(address _recipient, string memory _cause, uint _targetLimit, uint _commission) public{
 		require(msg.sender == admin, "Access Denied"); 
-		fundDetails[_recipient] = details(_cause,_balance, _targetLimit,_targetDate);
+		fundDetails[_recipient] = details(_cause, 0 , _targetLimit,_commission);
 	}
 	
 	function acceptDonation(address _recepient) public payable{
-        // retrieve the Details struct for the sender
     
-
-		address recepient = _recepient;
-		//  details memory recepientDetails = fundDetails[recepient];
-		
-		
-		
-        // Make sure that the amount doesnt exceed the target, during each donation
-		remAmount = (fundDetails[recepient].targetLimit - fundDetails[recepient].balance);
+        // adding commission with the required amount
+		uint actualTarget = fundDetails[_recepient].targetLimit + fundDetails[_recepient].commission;
+		uint remAmount = (actualTarget - fundDetails[_recepient].balance);
+		// Make sure that the amount doesnt exceed the target+commsission, during each donation
 		if (msg.value <= remAmount){
-        	fundDetails[recepient].balance += msg.value;
+        	fundDetails[_recepient].balance += msg.value;
+			emit donateEvent(msg.sender,msg.value);
 		}
 		else{
-		// If the balance exceeds the target amount after adding with the donation, return the remaining amount to the sender
-			returnAmount = msg.value - remAmount;
-			fundDetails[recepient].balance = fundDetails[recepient].targetLimit;
-			payable(msg.sender).transfer(returnAmount);
+		// If the balance exceeds the target+commission, return the remaining amount to the sender
+			fundDetails[_recepient].balance = actualTarget;
+			payable(msg.sender).transfer(msg.value - remAmount);
+			emit donateEvent(msg.sender,(msg.value-remAmount));
 		}
 
     }
@@ -56,3 +52,4 @@ contract Funding {
         return fundDetails[_recepient].balance;
     }
 }
+

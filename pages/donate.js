@@ -12,6 +12,7 @@ const donate = () => {
     const [cardBody1, setcardBody1] = useState();
     const [cardBody2, setcardBody2] = useState();
     const [cardBody3, setcardBody3] = useState();
+    const [cardBody4, setcardBody4] = useState();
 
     useEffect(() => {
         // Perform localStorage action
@@ -19,11 +20,13 @@ const donate = () => {
         const address = localStorage.getItem("address");
         const amount = localStorage.getItem("amount");
         const date = localStorage.getItem("date");
+        const commission = localStorage.getItem("commission");
         setcardTitle(title)
         setcardBody1(address);
         setcardBody2(amount)
         setcardBody3(date)
-      }, [setcardTitle,setcardBody1,setcardBody2,setcardBody3])
+        setcardBody4(commission)
+      }, [setcardTitle,setcardBody1,setcardBody2,setcardBody3,setcardBody4])
 
       const handleDonate = async (event) => {
         // Stop the form from submitting and refreshing the page.
@@ -59,6 +62,7 @@ const donate = () => {
     <p className="card-text">Receiver Address:{cardBody1}</p>
     <p className="card-text">Amount:{cardBody2} ether</p>
     <p className="card-text">Target Date:{cardBody3}</p>
+    <p className="card-text">Commission in ether:{cardBody3}</p>
     <form className="form-inline" onSubmit={handleDonate}>
        <div className="form-group mx-sm-3 mb-2">
         <label className="sr-only">Amount</label>
