@@ -14,7 +14,7 @@ const addcause = () => {
         // Stop the form from submitting and refreshing the page.
         event.preventDefault()
     
-        // Get data from the form.
+        
         let validDate = new Date(event.target.date.value)
         console.log("valid date is:",validDate)
         validDate.setDate(validDate.getDate());
@@ -25,7 +25,9 @@ const addcause = () => {
         const contractAddress = networks['5777'].address;
         const contractABI = abi;
         const contractInstance = new web3.eth.Contract(contractABI, contractAddress)
-        const txAccount = '0x46058EA99B494E7cDe2E0DB6a96e97AF25B59FD2';
+        const txAccount = '0x96FAedcd5e0E9dB763bD510Aef7aC05CaD1C528B';
+        
+        // Get data from the form.
         const data = {
           purpose: event.target.purpose.value,
           address: event.target.address.value,
@@ -34,14 +36,14 @@ const addcause = () => {
           commission: event.target.commission.value
         }
         try {
-          let txR = await contractInstance.methods.setDetails(data.address, data.purpose, 0, data.amount, data.date, data.commission).send({from: txAccount})
+          let txR = await contractInstance.methods.setDetails(data.address, data.purpose, data.amount,  data.commission).send({from: txAccount})
           console.log("txR", txR);
           console.log("setting local storage");
           localStorage.setItem('purpose',data.purpose);
           localStorage.setItem('address',data.address);
-          localStorage.setItem('amount',event.target.date.value);
+          localStorage.setItem('amount',event.target.amount.value);
           localStorage.setItem('date',event.target.date.value);
-          localStorage.setItem('commission',data.commission.value)
+          localStorage.setItem('commission',data.commission)
         } catch(error){
           console.error(error)
         }    
@@ -70,12 +72,12 @@ const addcause = () => {
   </div>
 
   <div className="form-outline mb-4">
-    <input type="date" id="date" className="form-control" />
+    <input type="date" name="date" id="date" className="form-control" />
     <label className="form-label">Target date</label>
   </div>
 
   <div className="form-outline mb-4">
-    <input type="commission" id="commission" className="form-control" />
+    <input type="commission" name="commission" id="commission" className="form-control" />
     <label className="form-label">Commission in ether</label>
   </div>
 

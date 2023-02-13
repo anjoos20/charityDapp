@@ -16,9 +16,12 @@ function MyApp({ Component, pageProps }) {
         alert("connecting..")
         if (typeof window !== "undefined" && typeof window.ethereum !== 'undefined'){
           try{
+            alert("inside try..")
             await window.ethereum.request({ method: "eth_requestAccounts" })
             web3 = new Web3(window.ethereum);
+            // console.log(accounts[0])
           }catch(err){
+            alert("error")
             setError(err.message)
           }
         }
@@ -43,6 +46,9 @@ function MyApp({ Component, pageProps }) {
           </li>
           <li className="nav-item">
               <Link href='donate'className="nav-link">Donate</Link>
+          </li>
+          <li className="nav-item">
+              <Link href='receipt'className="nav-link">Receipt</Link>
           </li>
           <li className="nav-item px-4">
               <a className="nav-link">About Us</a>

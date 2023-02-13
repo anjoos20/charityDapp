@@ -35,7 +35,7 @@ const donate = () => {
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
-        const senderAccount = '0xC379EF4BbC6216D5De6644b14783cb8565D08CBE';
+        const senderAccount = '0x7D225e98AbCaDE13bB850626fCf626F0F42cB1A8';
         const donAmount = web3.utils.toWei(event.target.inputAmount.value, 'ether');
         try {
             console.log("cardBody1",cardBody1);
@@ -62,7 +62,7 @@ const donate = () => {
     <p className="card-text">Receiver Address:{cardBody1}</p>
     <p className="card-text">Amount:{cardBody2} ether</p>
     <p className="card-text">Target Date:{cardBody3}</p>
-    <p className="card-text">Commission in ether:{cardBody3}</p>
+    <p className="card-text">Commission in ether:{cardBody4}</p>
     <form className="form-inline" onSubmit={handleDonate}>
        <div className="form-group mx-sm-3 mb-2">
         <label className="sr-only">Amount</label>

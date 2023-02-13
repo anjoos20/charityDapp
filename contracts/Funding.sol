@@ -22,7 +22,7 @@ contract Funding {
 	details public Details;
 	mapping (address => details) fundDetails;
 
-	event donateEvent(address indexed, uint);
+	event donateEvent(address indexed sender, uint amount);
 
 	function setDetails(address _recipient, string memory _cause, uint _targetLimit, uint _commission) public{
 		require(msg.sender == admin, "Access Denied"); 
@@ -45,7 +45,6 @@ contract Funding {
 			payable(msg.sender).transfer(msg.value - remAmount);
 			emit donateEvent(msg.sender,(msg.value-remAmount));
 		}
-
     }
 
 	function getBal(address _recepient) public view returns(uint){
