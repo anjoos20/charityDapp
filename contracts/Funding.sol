@@ -20,7 +20,7 @@ contract Funding {
 	}
 		
 	details public Details;
-	mapping (address => details) fundDetails;
+	mapping (address => details) public fundDetails;
 
 	event donateEvent(address indexed sender, uint amount);
 
@@ -43,7 +43,7 @@ contract Funding {
 		// If the balance exceeds the target+commission, return the remaining amount to the sender
 			fundDetails[_recepient].balance = actualTarget;
 			payable(msg.sender).transfer(msg.value - remAmount);
-			emit donateEvent(msg.sender,(msg.value-remAmount));
+			emit donateEvent(msg.sender,(remAmount));
 		}
     }
 
@@ -51,4 +51,3 @@ contract Funding {
         return fundDetails[_recepient].balance;
     }
 }
-
