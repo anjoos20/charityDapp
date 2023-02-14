@@ -25,7 +25,7 @@ const addcause = () => {
         const contractAddress = networks['5777'].address;
         const contractABI = abi;
         const contractInstance = new web3.eth.Contract(contractABI, contractAddress)
-        const txAccount = '0x96FAedcd5e0E9dB763bD510Aef7aC05CaD1C528B';
+        const txAccount = '0x2b6032Cd0E8720377E40599fb180B3E5385D6A1e';
         
         // Get data from the form.
         const data = {
@@ -33,7 +33,7 @@ const addcause = () => {
           address: event.target.address.value,
           amount: web3.utils.toWei(event.target.amount.value, 'ether'),
           date: deadLine,
-          commission: event.target.commission.value
+          commission: web3.utils.toWei(event.target.commission.value, 'ether')
         }
         try {
           let txR = await contractInstance.methods.setDetails(data.address, data.purpose, data.amount,  data.commission).send({from: txAccount})
@@ -43,7 +43,9 @@ const addcause = () => {
           localStorage.setItem('address',data.address);
           localStorage.setItem('amount',event.target.amount.value);
           localStorage.setItem('date',event.target.date.value);
-          localStorage.setItem('commission',data.commission)
+          localStorage.setItem('commission',event.target.commission.value)
+          localStorage.setItem('total',0)
+          alert("The details registered successfully")
         } catch(error){
           console.error(error)
         }    

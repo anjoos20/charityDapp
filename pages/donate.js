@@ -5,9 +5,6 @@ const Web3 = require('web3')
 
 const donate = () => {
 
-    // Stop the form from submitting and refreshing the page.
-    // event.preventDefault();
-
     const [cardTitle, setcardTitle] = useState();
     const [cardBody1, setcardBody1] = useState();
     const [cardBody2, setcardBody2] = useState();
@@ -35,26 +32,61 @@ const donate = () => {
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
-        const senderAccount = '0x7D225e98AbCaDE13bB850626fCf626F0F42cB1A8';
+        const senderAccount = '0x0a730Ad0403Eb32aFcEa400640883F3214D79020';
         const donAmount = web3.utils.toWei(event.target.inputAmount.value, 'ether');
+        let total = 0;
         try {
             console.log("cardBody1",cardBody1);
             // let txR = contractInstance.methods.acceptDonation(cardBody1).send({from: senderAccount, gas: 3000000,value:web3.utils.toWei(event.target.inputAmount.value, 'ether')})
-            let txR = contractInstance.methods.acceptDonation(cardBody1).send({from: senderAccount, gas: 3000000,value:donAmount})
+            let txR = await contractInstance.methods.acceptDonation(cardBody1).send({from: senderAccount, gas: 3000000,value:donAmount})
             console.log("donation is", donAmount);
             console.log("success",txR);
+            
+            total = localStorage.getItem("total") + event.target.inputAmount.value;
+            localStorage.removeItem("total");
+            localStorage.setItem("total",total)
+            alert("Thank you for your contribution!")
         }catch(error){
             console.error(error)
           }   
-        
-        
-            // web3.eth.sendTransaction({
-        //     from: senderAccount,
-        //     to: contractAddress,
-        //     value: web3.utils.toWei('1', 'ether'),
-        //   });
       }
 
+      const handleStatus = async (event) => {
+        // Stop the form from submitting and refreshing the page.
+        event.preventDefault()
+
+        let recAddress = localStorage.getItem("address");
+        const web3 = new Web3(ethereum)
+        const contractAddress = networks['5777'].address;
+        const contractInstance = new web3.eth.Contract(abi, contractAddress)
+        contractInstance.methods.getBal(recAddress).call((error, balance) => {
+          if (error) {
+            alert("Error: Check console")
+            console.error(error);
+          } else {
+            let balAmount = web3.utils.fromWei(balance, 'ether')
+
+            alert(`Total Ether received  ${balAmount}`);
+          }
+        });
+      }
+      const handleClosure = async (event) => {
+        event.preventDefault()
+        let recAddress = localStorage.getItem("address");
+
+        const web3 = new Web3(ethereum)
+        const contractAddress = networks['5777'].address;
+        const contractInstance = new web3.eth.Contract(abi, contractAddress)
+        const txAccount = "0x2b6032Cd0E8720377E40599fb180B3E5385D6A1e"
+        try{
+          const tx = await contractInstance.methods.accountClosure(recAddress).send({from:txAccount});
+          console.log(tx); // Transaction hash
+          localStorage.clear();
+          alert("Account successfully closed! Balance transferred to respective accounts")
+        }catch(error){
+        console.error(error)
+        }   
+        }
   return (
     <div className="card md-3 lg-3" style={{width: 600, margin:50}}>
     <div className="card-body">
@@ -71,6 +103,12 @@ const donate = () => {
        <button type="submit" className="btn btn-success mb-2">Donate amount</button>
     </form>
   </div>
+  <form className="form-inline" onSubmit={handleStatus}>
+    <button type="submit" className="btn btn-primary mx-sm-3 mb-2">Amount Achieved </button>
+  </form>
+  <form className="form-inline" onSubmit={handleClosure}>
+    <button type="submit" className="btn btn-danger mx-sm-3 mb-2">Close the Account </button>
+  </form>
 </div>
   )
 }

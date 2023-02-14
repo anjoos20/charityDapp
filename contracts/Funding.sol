@@ -50,4 +50,11 @@ contract Funding {
 	function getBal(address _recepient) public view returns(uint){
         return fundDetails[_recepient].balance;
     }
+
+	function accountClosure(address _recepient) public {
+        require(msg.sender == admin, "Access Denied"); 
+       payable(_recepient).transfer((fundDetails[_recepient].balance-fundDetails[_recepient].commission));
+       payable(admin).transfer((fundDetails[_recepient].commission));
+       delete fundDetails[_recepient];
+    }
 }

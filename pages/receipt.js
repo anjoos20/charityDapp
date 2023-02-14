@@ -59,7 +59,7 @@ const receipt = () => {
                 <h5 className="card-title">Donation receipt from HelpUnlimited</h5>
                 <p className="card-text">Donor Address:{donor}</p>
                 <p className="card-text">Total donations till now in ether: {donation}</p>
-                <p className="card-text">We vlaue your donations. Thank you!</p>
+                <p className="card-text">We value your donations. Thank you!</p>
             </div>
         </div>
     </div>
