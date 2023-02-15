@@ -55,31 +55,133 @@ contract("Funding", function (accounts) {
       from: sender1,
       value: amount1
     });
-    balanceAfter1 = await (instance.getBal(receiver1))
+    balanceA1 = await (instance.getBal(receiver1))
+    balanceAfter1 = Number(balanceA1)
     console.log("Balance After",balanceAfter1.toString());
-    // assert.deepEqual(balanceAfter1,balanceBefore1+amount1,"First donation - receiver1");
-    // **********************************************************************
-    //  Facing big number issue here
+    assert.equal(balanceAfter1,balanceBefore1+amount1,"First donation - receiver1");
+    
+    const sender2 = accounts[4];
+    const amount2 = 5000000000000000000
+    balanceBefore2 = await (instance.getBal(receiver1))
+    console.log("Balance before",balanceBefore2.toString());
+    await instance.acceptDonation(receiver1,{
+      from: sender2,
+      value: amount2
+    });
+    balanceA2 = await (instance.getBal(receiver1))
+    console.log("Balance After",balanceA2.toString());
+    balanceAfter2=Number(balanceA2)
+    BalanceBef2= Number(balanceBefore2)+Number(amount2)
+    assert.equal(balanceAfter2,BalanceBef2,"Second donation - receiver1");
+    // When donation is in excess of the target limit, the amount gets credited back to the sender
+    const sender3 = accounts[5];
+    const amount3 = 3000000000000000000
+    balanceBefore3 = await (instance.getBal(receiver1))
+    console.log("Balance before",balanceBefore3.toString());
+    await instance.acceptDonation(receiver1,{
+      from: sender3,
+      value: amount3
+    });
+    balanceA3 = await (instance.getBal(receiver1))
+    console.log("Balance After",balanceA3.toString());
+    balanceAfter3=Number(balanceA3)
+    BalanceBef3= Number(balanceBefore3)+Number(amount3)
+    assert.isAbove(BalanceBef3,balanceAfter3,"Third donation - receiver1");
+    console.log("For the second receiver")
+    // First donation for the second receiver
+    balance2Before1 = await (instance.getBal(receiver2))
+    console.log("Balance before",balance2Before1.toString());
+    await instance.acceptDonation(receiver2,{
+      from: sender1,
+      value: amount21
+    });
+    balance2A1 = await (instance.getBal(receiver2))
+    console.log("Balance After",balance2A1.toString());
+    balance2After1=Number(balance2A1)
+    Balance2Bef1= Number(balance2Before1)+Number(amount21)
+    assert.equal(balance2After1,Balance2Bef1,"First donation - receiver2");
+    // When donation is in excess of the target limit, the amount gets credited back to the sender
+    balance2Before2 = await (instance.getBal(receiver2))
+    console.log("Balance before",balance2Before2.toString());
+    await instance.acceptDonation(receiver2,{
+      from: sender2,
+      value: amount22
+    });
+    balance2A2 = await (instance.getBal(receiver2))
+    balance2After2=Number(balance2A2)
+    Balance2Bef2= Number(balance2Before2)+Number(amount22)
+    assert.isAbove(Balance2Bef2,balance2After2,"Second donation - receiver2");
+    console.log("Balance After",balance2A2.toString());
   });
-  it("should update the balance properly after accepting donation.", async function () {
+  it("should retrieve the donation amount for each sender from the event log", async function () {
     let instance =await Funding.deployed();
-    instance.getPastEvents("donateEvent", {
-      filter: { sender: accounts[3] },
-      fromBlock: 0,
-      toBlock: "latest"
-  }, function(error, events) {
-      if (error) {
-          console.log(error);
-      } else {
-          events.forEach(function(event) {
-              console.log("Event:", event);
-              console.log("Donor address:", event.returnValues.sender);
-            // ***************************************************************
-            // ****************Event log details not returned here
-              console.log("Donation amount:", event.returnValues.amount);
-              
-          });
-      }
-  })
+    let actual1 =0;
+    let actual2 =0;
+    amount1 = 4000000000000000000;
+    amount21 = 2000000000000000000;
+    expected1 = amount1 + amount21
+    const eventLogs1 = await instance.getPastEvents(
+      "donateEvent",
+      {fromBlock: 0,
+      toBlock: "latest",
+    // ***************** Testing multiple donations
+      filter: { sender: accounts[3] }}
+    )
+    eventLogs1.forEach((log1) => {
+      const amount = (log1.returnValues.amount)
+      amt = Number(amount)
+      actual1 += amt;
+    });
+    assert.equal(actual1,expected1,"Logs validation")
+
+    amount1 = 4000000000000000000;
+    amount21 = 2000000000000000000;
+    const amount2 = 5000000000000000000
+    const amount22 = 4000000000000000000
+    expected2 = amount2 + amount22
+    const eventLogs2 = await instance.getPastEvents(
+      "donateEvent",
+      {fromBlock: 0,
+      toBlock: "latest",
+    // Testing when donation is in excess of the targetlimit, the remaining amount 
+    // gets credited back to the sender
+      filter: { sender: accounts[4] }}
+    )
+    eventLogs2.forEach((log2) => {
+      const amount = (log2.returnValues.amount)
+      amt = Number(amount)
+      actual2 += amt;
+      console.log("actual2",actual2);
+    });
+    assert.isAbove(expected2,actual2,"Logs validation")
 })
-});
+it("should disburse the fund as expected and delete the mapping instance - accountClosure function ", async function () {
+  let instance =await Funding.deployed();
+  bal1B = await web3.eth.getBalance(accounts[0])
+  deployerB = Number(bal1B)
+  bal2B = await web3.eth.getBalance(accounts[1])
+  receiverB = Number(bal2B)
+
+  let details1 = await instance.fundDetails.call(accounts[1]);
+  com1 = details1.commission
+  commission1 = Number(com1)
+  bal1 = details1.balance;
+  balance1 = Number(bal1);
+  await instance.accountClosure(accounts[1]);
+  bal1A = await web3.eth.getBalance(accounts[0])
+  deployerA = Number(bal1A)
+  // Verify that the commission gets credited to the deployer account
+  // Here cant equate with the balance plus commission because transaction cost
+  // for the accountClosure gets deducted from the deployer account
+  assert.isAbove(deployerA,deployerB,"Logs validation")
+  bal2A = await web3.eth.getBalance(accounts[1])
+  receiverA = Number(bal2A)
+  fund = balance1 - commission1
+  // Verify that the fund gets credited to the charity requester
+  // received fund minus commission is transferred to the requester.
+  assert.equal(receiverA,receiverB+fund,"fund credit validation")
+})
+})
+
+    
+
