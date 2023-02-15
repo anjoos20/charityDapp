@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from "react";
 import { abi, networks } from '../build/contracts/Funding.json'
+import Router from 'next/router'
 const Web3 = require('web3')
 
 const donate = () => {
@@ -24,41 +25,42 @@ const donate = () => {
         setcardBody3(date)
         setcardBody4(commission)
       }, [setcardTitle,setcardBody1,setcardBody2,setcardBody3,setcardBody4])
-
+      // This function helps to record the donations on the blockchain
       const handleDonate = async (event) => {
         // Stop the form from submitting and refreshing the page.
         event.preventDefault()
-
+        //  Creating a contract instance using the Web3.js library
+        //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
         const senderAccount = '0x0a730Ad0403Eb32aFcEa400640883F3214D79020';
+        // Web3 utils used to convert the input ether to Wei
         const donAmount = web3.utils.toWei(event.target.inputAmount.value, 'ether');
-        let total = 0;
         try {
-            console.log("cardBody1",cardBody1);
-            // let txR = contractInstance.methods.acceptDonation(cardBody1).send({from: senderAccount, gas: 3000000,value:web3.utils.toWei(event.target.inputAmount.value, 'ether')})
+            // accessing the smart contract function acceptDonation using web3js
+            // This function is used to update the donations for a particular campain in a struct-mapping
             let txR = await contractInstance.methods.acceptDonation(cardBody1).send({from: senderAccount, gas: 3000000,value:donAmount})
-            console.log("donation is", donAmount);
             console.log("success",txR);
-            
             total = localStorage.getItem("total") + event.target.inputAmount.value;
-            localStorage.removeItem("total");
-            localStorage.setItem("total",total)
             alert("Thank you for your contribution!")
+            Router.reload(window.location.pathname)
         }catch(error){
             console.error(error)
           }   
       }
-
+      // This function helps to get the achieved amount for a particular campaign
       const handleStatus = async (event) => {
         // Stop the form from submitting and refreshing the page.
         event.preventDefault()
-
         let recAddress = localStorage.getItem("address");
+        //  Creating a contract instance using the Web3.js library
+        //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
+        // accessing the smart contract function getBal using web3js
+        // getBal accepts recipient address as the input and returns the corresponding balance
         contractInstance.methods.getBal(recAddress).call((error, balance) => {
           if (error) {
             alert("Error: Check console")
@@ -70,19 +72,25 @@ const donate = () => {
           }
         });
       }
+      //  This function helps to close a particular campaign and disburse the fund to the corresponding accounts
       const handleClosure = async (event) => {
         event.preventDefault()
         let recAddress = localStorage.getItem("address");
-
+        //  Creating a contract instance using the Web3.js library
+        //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
         const txAccount = "0x2b6032Cd0E8720377E40599fb180B3E5385D6A1e"
+        // accessing the smart contract function accountClosure using web3js
+        // accountClosure function disburses the fund to the recipient address, commission to the contract owner
+        //  and deletes the struct mapping for the corresponding address 
         try{
           const tx = await contractInstance.methods.accountClosure(recAddress).send({from:txAccount});
           console.log(tx); // Transaction hash
           localStorage.clear();
           alert("Account successfully closed! Balance transferred to respective accounts")
+          Router.reload(window.location.pathname)
         }catch(error){
         console.error(error)
         }   

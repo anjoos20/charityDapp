@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.8.1",
     "@truffle/hdwallet-provider": "^2.1.6",
     "bootstrap": "^4.6.0",
     "dotenv": "^16.0.3",

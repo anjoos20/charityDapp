@@ -1,5 +1,6 @@
 import React from 'react'
 import { abi, networks } from '../build/contracts/Funding.json'
+import Router from 'next/router'
 
 // 
 // Ethereum provider API by the metamask
@@ -9,18 +10,12 @@ const Web3 = require('web3')
 
 
 const addcause = () => {
-
+//  Handlesubmit registers the new request onto the blockchain
     const handleSubmit = async (event) => {
         // Stop the form from submitting and refreshing the page.
         event.preventDefault()
-    
-        
-        let validDate = new Date(event.target.date.value)
-        console.log("valid date is:",validDate)
-        validDate.setDate(validDate.getDate());
-        const deadLine = Math.floor(validDate.getTime() / 1000);
-        
-
+        //  Creating a contract instance using the Web3.js library
+        //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
         const contractABI = abi;
@@ -31,11 +26,15 @@ const addcause = () => {
         const data = {
           purpose: event.target.purpose.value,
           address: event.target.address.value,
+          // Web3 utils used to convert the input ether to Wei
+          // Since solidity cant handle floating point variables ether is to be converted to Wei
           amount: web3.utils.toWei(event.target.amount.value, 'ether'),
           date: deadLine,
           commission: web3.utils.toWei(event.target.commission.value, 'ether')
         }
         try {
+          // accessing the smart contract function setDetails using web3js
+          // This function is used to save the setails of the new Campaign in a struct-mapping 
           let txR = await contractInstance.methods.setDetails(data.address, data.purpose, data.amount,  data.commission).send({from: txAccount})
           console.log("txR", txR);
           console.log("setting local storage");
@@ -44,8 +43,8 @@ const addcause = () => {
           localStorage.setItem('amount',event.target.amount.value);
           localStorage.setItem('date',event.target.date.value);
           localStorage.setItem('commission',event.target.commission.value)
-          localStorage.setItem('total',0)
           alert("The details registered successfully")
+          Router.reload(window.location.pathname);
         } catch(error){
           console.error(error)
         }    

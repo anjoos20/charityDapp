@@ -16,10 +16,8 @@ function MyApp({ Component, pageProps }) {
         alert("connecting..")
         if (typeof window !== "undefined" && typeof window.ethereum !== 'undefined'){
           try{
-            alert("inside try..")
             await window.ethereum.request({ method: "eth_requestAccounts" })
             web3 = new Web3(window.ethereum);
-            // console.log(accounts[0])
           }catch(err){
             alert("error")
             setError(err.message)
@@ -30,9 +28,10 @@ function MyApp({ Component, pageProps }) {
         }
     }
   return (
-    <div>
+//  NavBar items 
+ <div>
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a className="navbar-brand" href="/">HelpUnlimited</a>
+    <a className="navbar-brand" href="/">CharityUnlimited</a>
     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span className="navbar-toggler-icon"></span>
     </button>
@@ -44,16 +43,13 @@ function MyApp({ Component, pageProps }) {
           <li className="nav-item px-4">
                <Link href='addcause'className="nav-link">New Cause</Link>
           </li>
-          <li className="nav-item">
+          <li className="nav-item px-2">
               <Link href='donate'className="nav-link">Donate</Link>
           </li>
-          <li className="nav-item">
+          <li className="nav-item px-4">
               <Link href='receipt'className="nav-link">Receipt</Link>
           </li>
-          <li className="nav-item px-4">
-              <a className="nav-link">About Us</a>
-          </li>
-          <li className="nav-item button-nav">
+          <li className="nav-item button-nav px-2">
               <button onClick={connectWalletHandler} type="button" className="btn btn-success button-nav">Connect wallet</button>
           </li>
       </ul>
