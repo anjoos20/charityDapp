@@ -1,6 +1,5 @@
 const Funding = artifacts.require("Funding");
 
-
 contract("Funding", function (accounts) {
   it("should deploy the contract properly", async function () {
     let instance =await Funding.deployed();
@@ -151,16 +150,15 @@ contract("Funding", function (accounts) {
       const amount = (log2.returnValues.amount)
       amt = Number(amount)
       actual2 += amt;
-      console.log("actual2",actual2);
     });
     assert.isAbove(expected2,actual2,"Logs validation")
 })
 it("should disburse the fund as expected and delete the mapping instance - accountClosure function ", async function () {
   let instance =await Funding.deployed();
   bal1B = await web3.eth.getBalance(accounts[0])
-  deployerB = Number(bal1B)
+  deployer1B = Number(bal1B)
   bal2B = await web3.eth.getBalance(accounts[1])
-  receiverB = Number(bal2B)
+  receiver1B = Number(bal2B)
 
   let details1 = await instance.fundDetails.call(accounts[1]);
   com1 = details1.commission
@@ -169,17 +167,41 @@ it("should disburse the fund as expected and delete the mapping instance - accou
   balance1 = Number(bal1);
   await instance.accountClosure(accounts[1]);
   bal1A = await web3.eth.getBalance(accounts[0])
-  deployerA = Number(bal1A)
-  // Verify that the commission gets credited to the deployer account
-  // Here cant equate with the balance plus commission because transaction cost
+  deployer1A = Number(bal1A)
+  // Verify that the commission gets credited to the deployer account.
+  // Cant equate with the balance plus commission because transaction cost
   // for the accountClosure gets deducted from the deployer account
-  assert.isAbove(deployerA,deployerB,"Logs validation")
+  assert.isAbove(deployer1A,deployer1B,"Logs validation")
   bal2A = await web3.eth.getBalance(accounts[1])
-  receiverA = Number(bal2A)
+  receiver1A = Number(bal2A)
   fund = balance1 - commission1
   // Verify that the fund gets credited to the charity requester
   // received fund minus commission is transferred to the requester.
-  assert.equal(receiverA,receiverB+fund,"fund credit validation")
+  assert.equal(receiver1A,receiver1B+fund,"fund credit validation")
+
+  bal3B = await web3.eth.getBalance(accounts[0])
+  deployer2B = Number(bal3B)
+  bal4B = await web3.eth.getBalance(accounts[2])
+  receiver2B = Number(bal4B)
+ 
+  let details2 = await instance.fundDetails.call(accounts[2]);
+  com3 = details2.commission
+  commission3 = Number(com3)
+  bal3 = details2.balance;
+  balance3 = Number(bal3);
+  await instance.accountClosure(accounts[2]);
+  bal3A = await web3.eth.getBalance(accounts[0])
+  deployer2A = Number(bal3A)
+  // Verify that the commission gets credited to the deployer account.
+  // Cant equate with the balance plus commission because transaction cost
+  // for the accountClosure gets deducted from the deployer account
+  assert.isAbove(deployer2A,deployer2B,"Commission credit validation")
+  bal4A = await web3.eth.getBalance(accounts[2])
+  receiver2A = Number(bal4A)
+  fund = balance3 - commission3
+  // Verify that the fund gets credited to the charity requester
+  // received fund minus commission is transferred to the requester.
+  assert.equal(receiver2A,receiver2B+fund,"fund credit validation")
 })
 })
 
