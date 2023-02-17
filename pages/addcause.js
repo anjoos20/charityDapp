@@ -21,7 +21,7 @@ const addcause = () => {
         // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractABI = abi;
         const contractInstance = new web3.eth.Contract(contractABI, contractAddress)
-        const txAccount = '0x7C059a1Ae6cf434f050d74EFC9C0f91B6Bb8119a';
+        const txAccount = '0x4Bcd7daEb60FE4Aa5E58bF6CD2Bf2142595F6481';
         
         // Get data from the form.
         const data = {
