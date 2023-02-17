@@ -18,9 +18,10 @@ const addcause = () => {
         //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
+        // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractABI = abi;
         const contractInstance = new web3.eth.Contract(contractABI, contractAddress)
-        const txAccount = '0x2b6032Cd0E8720377E40599fb180B3E5385D6A1e';
+        const txAccount = '0x7C059a1Ae6cf434f050d74EFC9C0f91B6Bb8119a';
         
         // Get data from the form.
         const data = {
@@ -29,7 +30,6 @@ const addcause = () => {
           // Web3 utils used to convert the input ether to Wei
           // Since solidity cant handle floating point variables ether is to be converted to Wei
           amount: web3.utils.toWei(event.target.amount.value, 'ether'),
-          date: deadLine,
           commission: web3.utils.toWei(event.target.commission.value, 'ether')
         }
         try {

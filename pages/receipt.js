@@ -14,11 +14,11 @@ const receipt = () => {
         //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
+        // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractABI = abi;
         const contractInstance = new web3.eth.Contract(contractABI, contractAddress)
         const sender= event.target.sender.value;
         
-        alert(sender)
       // accessing the smart contract event log donateEvent so that all the donations from a particular sender can be accessed 
       contractInstance.getPastEvents("donateEvent", {
           filter: { sender: sender },

@@ -33,8 +33,9 @@ const donate = () => {
         //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
+        // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
-        const senderAccount = '0x0a730Ad0403Eb32aFcEa400640883F3214D79020';
+        const senderAccount = '0x04be1a02567061adf462bc596af6ecCD6123e08c';
         // Web3 utils used to convert the input ether to Wei
         const donAmount = web3.utils.toWei(event.target.inputAmount.value, 'ether');
         try {
@@ -42,7 +43,6 @@ const donate = () => {
             // This function is used to update the donations for a particular campain in a struct-mapping
             let txR = await contractInstance.methods.acceptDonation(cardBody1).send({from: senderAccount, gas: 3000000,value:donAmount})
             console.log("success",txR);
-            total = localStorage.getItem("total") + event.target.inputAmount.value;
             alert("Thank you for your contribution!")
             Router.reload(window.location.pathname)
         }catch(error){
@@ -58,6 +58,7 @@ const donate = () => {
         //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
+        // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
         // accessing the smart contract function getBal using web3js
         // getBal accepts recipient address as the input and returns the corresponding balance
@@ -80,8 +81,9 @@ const donate = () => {
         //  This contract instance is used to interact with the the smartcontract functions and eventlogs
         const web3 = new Web3(ethereum)
         const contractAddress = networks['5777'].address;
+        // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
-        const txAccount = "0x2b6032Cd0E8720377E40599fb180B3E5385D6A1e"
+        const txAccount = "0x7C059a1Ae6cf434f050d74EFC9C0f91B6Bb8119a"
         // accessing the smart contract function accountClosure using web3js
         // accountClosure function disburses the fund to the recipient address, commission to the contract owner
         //  and deletes the struct mapping for the corresponding address 
@@ -100,7 +102,7 @@ const donate = () => {
     <div className="card-body">
     <h5 className="card-title">{cardTitle}</h5>
     <p className="card-text">Receiver Address:{cardBody1}</p>
-    <p className="card-text">Amount:{cardBody2} ether</p>
+    <p className="card-text">Target Amount:{cardBody2} ether</p>
     <p className="card-text">Target Date:{cardBody3}</p>
     <p className="card-text">Commission in ether:{cardBody4}</p>
     <form className="form-inline" onSubmit={handleDonate}>
