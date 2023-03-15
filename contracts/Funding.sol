@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 contract Funding {
  	address admin;
 
@@ -22,7 +22,7 @@ contract Funding {
 	mapping (address => details) public fundDetails;
 
 	// An event for donation. The sender is indexed so that filtering could be done using the sender
-	event donateEvent(address indexed sender, uint amount);
+	event donateEvent(address indexed sender, uint amount, uint timestamp);
 	
 	// This function registers a new campaign. The balance amount is set to zero initially.
 	// Only admin ( contract deployer ) has access to this function
@@ -39,13 +39,13 @@ contract Funding {
 		// Make sure that the amount doesnt exceed the target+commsission, during each donation
 		if (msg.value <= remAmount){
         	fundDetails[_recepient].balance += msg.value;
-			emit donateEvent(msg.sender,msg.value);
+			emit donateEvent(msg.sender,msg.value,block.timestamp);
 		}
 		else{
 		// If the balance exceeds the target+commission, return the remaining amount to the sender
 			fundDetails[_recepient].balance = actualTarget;
 			payable(msg.sender).transfer(msg.value - remAmount);
-			emit donateEvent(msg.sender,(remAmount));
+			emit donateEvent(msg.sender,remAmount,block.timestamp);
 		}
     }
 

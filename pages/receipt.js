@@ -18,6 +18,14 @@ const receipt = () => {
         const contractABI = abi;
         const contractInstance = new web3.eth.Contract(contractABI, contractAddress)
         const sender= event.target.sender.value;
+        const date1 = new Date(event.target.date1.value);
+        const unixTS1 = Math.floor(date1.getTime() / 1000);
+
+        const date2 = new Date(event.target.date2.value);
+        const unixTS2 = Math.floor(date2.getTime() / 1000);
+
+        console.log("unixTS1", unixTS1);
+        console.log("unixTS2", unixTS2);
         
       // accessing the smart contract event log donateEvent so that all the donations from a particular sender can be accessed 
       contractInstance.getPastEvents("donateEvent", {
@@ -28,17 +36,17 @@ const receipt = () => {
           if (error) {
               console.log(error);
           } else {
-              events.forEach(function(event) {
-                  console.log("Event:", event);
-                  console.log("Donor address:", event.returnValues.sender);
-
-                  console.log("Donation amount:", event.returnValues.amount);
-                  const etherValue = Web3.utils.fromWei(event.returnValues.amount, 'ether');
-                  let rAmount = parseInt(etherValue)
-                  console.log("ramount",rAmount)
-                  amt += rAmount;
-                  console.log("amount",amt)
-              });
+                  const datedEvents = events.filter((event) => {
+                  return ((event.returnValues.timestamp >= unixTS1) && (event.returnValues.timestamp <= unixTS2));
+                  });
+                  datedEvents.forEach(function(datedEvent) {
+                    console.log("Donation amount:", datedEvent.returnValues.amount);
+                    const etherValue = Web3.utils.fromWei(datedEvent.returnValues.amount, 'ether');
+                    let rAmount = parseInt(etherValue)
+                    console.log("ramount",rAmount)
+                    amt += rAmount;
+                    console.log("amount",amt)
+                    });
           }
           setDonor(sender)
           setDonation(amt)
@@ -52,10 +60,21 @@ const receipt = () => {
   return (
     <div>
         <form className="form-inline" onSubmit={handleReceipt}>
-        <div className="form-group mx-sm-3 mb-2">
-            <input type="text" className="form-control" name="sender" id="sender" placeholder="Enter Address"/>
+        <div className="form-group">
+            <label>
+                Donor address:
+                <input type="text" className="form-control" name="sender" id="sender"/>
+            </label>
+            <label>
+                From date:
+                <input type="date" className="form-control" name="date1" id="fromDate"/>
+            </label>
+            <label>
+                To date:
+                <input type="date" className="form-control" name="date2" id="toDate"/>
+            </label>
         </div>
-            <button type="submit" className="btn btn-primary mb-2">Get receipt</button>
+        <button type="submit" className="btn btn-primary mb-2">Get receipt</button>
         </form>
         <div className="card md-3 lg-3" style={{width: 600, margin:50}}>
             <div className="card-body">

@@ -35,7 +35,7 @@ const donate = () => {
         const contractAddress = networks['5777'].address;
         // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
-        const senderAccount = '0x480B6ee0A5Cf3596e6Bd6C0b08f640a440027e86';
+        const senderAccount = '0xBBa8FfDEa5eEeBA69264E3bEdC809e2C0da8941B';
         // Web3 utils used to convert the input ether to Wei
         const donAmount = web3.utils.toWei(event.target.inputAmount.value, 'ether');
         try {
@@ -83,7 +83,7 @@ const donate = () => {
         const contractAddress = networks['5777'].address;
         // const contractAddress ="0xB5BEDa63738a527b35464a1B8330F2B8cE1DC5D7"
         const contractInstance = new web3.eth.Contract(abi, contractAddress)
-        const txAccount = "0x4Bcd7daEb60FE4Aa5E58bF6CD2Bf2142595F6481"
+        const txAccount = "0xe6aAEA252230b62387B3d184223f62809B551281"
         // accessing the smart contract function accountClosure using web3js
         // accountClosure function disburses the fund to the recipient address, commission to the contract owner
         //  and deletes the struct mapping for the corresponding address 
